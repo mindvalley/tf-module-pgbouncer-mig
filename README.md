@@ -3,7 +3,7 @@
 Terraform module to create following resources:  
 * MIG with regional distribution & healthcheck  
 * Internal load balancer to distribute traffic among the instances  
-* Vault secret injection using GCP Authentication (requires a existing Vault server with GCP Auth enabled)  
+* Vault secret injection using GCP Authentication (requires an existing Vault server with GCP Auth enabled)  
 
 ## Compatibility
 This module is meant for use with Terraform 0.13. If you haven't
