@@ -64,6 +64,19 @@ variable "enable_shielded_vm" {
   description = "Whether to enable the Shielded VM configuration on the instance. Note that the instance image must support Shielded VMs. See https://cloud.google.com/compute/docs/images"
 }
 
+variable "enabled_databases" {
+  description = "List of the databases that this pgbouncer instance will serves"
+  type = list(object({
+    name = string
+    username = string
+    host = string
+    port = number
+    pool_size = number
+    password_vault_secret_path = string
+  }))
+  default = []
+}
+
 variable "health_check" {
   description = "Health check to determine whether instances are responsive and able to do work"
   type = object({
@@ -161,6 +174,20 @@ variable "project_id" {
   default     = null
 }
 
+variable "pgbouncer_config" {
+  description = "Parameters of the pgbpouncer"
+  type = object({
+    listen_port = number
+    listen_addr = string
+    max_client_conn = number
+  })
+  default = {
+    listen_port = 6432
+    listen_addr = "0.0.0.0"
+    max_client_conn = 4000
+  }
+}
+
 variable "random_role_id" {
   type = bool
 
@@ -190,6 +217,7 @@ variable "service_account_roles" {
     "roles/monitoring.metricWriter",
     "roles/monitoring.viewer",
     "roles/compute.osLogin",
+    "roles/iam.serviceAccountTokenCreator"
   ]
 }
 
@@ -254,14 +282,28 @@ variable "target_pools" {
 variable "update_policy" {
   description = "The rolling update policy. https://www.terraform.io/docs/providers/google/r/compute_region_instance_group_manager.html#rolling_update_policy"
   type = list(object({
-    max_surge_fixed              = number
-    instance_redistribution_type = string
-    max_surge_percent            = number
-    max_unavailable_fixed        = number
-    max_unavailable_percent      = number
-    min_ready_sec                = number
+    max_surge_fixed              = optional(number)
+    instance_redistribution_type = optional(string)
+    max_surge_percent            = optional(number)
+    max_unavailable_fixed        = optional(number)
+    max_unavailable_percent      = optional(number)
+    min_ready_sec                = optional(number)
     minimal_action               = string
     type                         = string
   }))
   default = []
+}
+
+variable "vault_config" {
+  description = "Parameters to add into vault agent configuration"
+  type = object({
+    vault_server_address = string
+    vault_cluster_role = string
+    tls_skip_verify = string
+  })
+  default = {
+    vault_server_address = "http://127.0.0.1:8200"
+    vault_cluster_role = "default_gce_vault_role"
+    tls_skip_verify = "false"
+  }
 }

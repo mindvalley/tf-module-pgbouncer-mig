@@ -1,12 +1,40 @@
-# build.pkr.hcl
+variable "project_id" {
+  type = string
+  description = "The id of the GCP project"
+}
+
+variable "zone" {
+  type = string
+  description = "The zone of the build machine in GCP"
+}
+
+variable "machine_type" {
+  type = string
+  description = "The type of the build machine"
+}
+
+variable "disk_size" {
+  type = number
+  description = "The size of the build machine"
+}
+
+variable "subnetwork" {
+  type = string
+  description = "The name of the subnetwork of the build machine"
+}
+
+variable "ssh_username" {
+  type = string
+  description = "The ssh username to connect to the build machine"
+  default = "ubuntu"
+}
+
+variable "source_image_name" {
+  type = string
+  description = "The name of the source image to build"
+}
+
 variables {
-  project_id = "mv-dev-alexco"
-  source_image_name = "ubuntu-2004-focal-v20201014"
-  zone = "asia-southeast1-a"
-  machine_type = "n1-standard-1"
-  disk_size = 20
-  subnetwork = "default"
-  ssh_username = "ubuntu"
   go_path = env("GOPATH")
 }
 

@@ -92,7 +92,7 @@ resource "google_compute_region_instance_group_manager" "pgbouncer" {
   name     = "${var.cluster_name}-ig"
 
   project                   = var.project_id
-  base_instance_name        = "pgbouncer"
+  base_instance_name        = var.cluster_name
   region                    = var.region
   distribution_policy_zones = local.distribution_policy_zones
 
@@ -155,10 +155,14 @@ data "google_compute_image" "image_family" {
 }
 
 data "template_file" "init" {
-  template = file("${path.module}/scripts/startup.sh.tpl")
-  vars = {
-    consul_address = "1.2.3.4"
-  }
+  template = templatefile(
+    "${path.module}/scripts/startup.sh.tpl",
+    {
+      pgbouncer_config = var.pgbouncer_config
+      enabled_databases = var.enabled_databases
+      vault_config = var.vault_config
+    }
+    )
 }
 
 resource "google_compute_instance_template" "pgbouncer" {
