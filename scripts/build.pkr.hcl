@@ -87,6 +87,10 @@ build {
         max_retries = 3
     }
 
+    provisioner "ansible" {
+      playbook_file = "./playbook.yml"
+    }
+
     post-processor "shell-local" {
         inline = ["echo Hello World from ${source.type}.${source.name}"]
     }

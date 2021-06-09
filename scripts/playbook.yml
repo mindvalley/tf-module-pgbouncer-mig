@@ -1,0 +1,32 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Add or modify soft nofile limits for wildcard domain
+      community.general.pam_limits:
+        domain: '*'
+        limit_type: soft
+        limit_item: nofile
+        value: 65530
+    - name: Add or modify hard nofile limits for wildcard domain
+      community.general.pam_limits:
+        domain: '*'
+        limit_type: hard
+        limit_item: nofile
+        value: 65530
+    - name: Add pam common-session pam_limits
+      community.general.pamd:
+        name: common-session
+        new_type: session
+        new_control: 'required'
+        new_module_path: pam_limits.so
+        state: after
+        type: session
+        module_path: pam_systemd.so
+        control: 'optional'
+    - name: Set sysctl fs.file-max
+      ansible.posix.sysctl:
+        name: fs.file-max
+        value: '65530'
+        sysctl_set: yes
+        state: present
+        reload: yes
