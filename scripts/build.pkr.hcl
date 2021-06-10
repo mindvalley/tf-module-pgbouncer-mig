@@ -18,6 +18,12 @@ variable "disk_size" {
   description = "The size of the build machine"
 }
 
+variable "network" {
+ type = string
+ default = "default"
+ description = " The name of the network of the build machine" 
+}
+
 variable "subnetwork" {
   type = string
   description = "The name of the subnetwork of the build machine"
@@ -34,6 +40,36 @@ variable "source_image_name" {
   description = "The name of the source image to build"
 }
 
+variable "use_iap" {
+ type = bool
+ default = false
+ description = "Use IAP Proxy"
+}
+
+variable "use_os_login" {
+ type = bool
+ default = false
+ description = "Use OSLogin"
+}
+
+variable "use_internal_ip" {
+ type = bool
+ default = false
+ description = "Use Internal IP instead of External IP when building"
+}
+
+variable "omit_external_ip" {
+ type = bool
+ default = false
+ description = "Choose wheter to use External IP for the build instance"
+}
+
+variable "tags" {
+ type = list(string)
+ description = "List of network tags"
+ default = []
+}
+
 variables {
   go_path = env("GOPATH")
 }
@@ -41,10 +77,18 @@ variables {
 source "googlecompute" "pgbouncer-build" {
   source_image = var.source_image_name
   project_id = var.project_id
+  network = var.network
+  subnetwork = var.subnetwork
   zone = var.zone
+  machine_type = var.machine_type
   image_name = "mv-pgbouncer-${uuidv4()}"
   image_family = "mv-pgbouncer"
   ssh_username = var.ssh_username
+  tags = var.tags
+  use_iap = var.use_iap
+  use_os_login = var.use_os_login
+  use_internal_ip = var.use_internal_ip
+  omit_external_ip = var.omit_external_ip
 }
 
 build {

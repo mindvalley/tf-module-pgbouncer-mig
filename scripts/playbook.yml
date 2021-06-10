@@ -1,4 +1,5 @@
 - hosts: all
+  remote_user: ubuntu
   become: true
   tasks:
     - name: Add or modify soft nofile limits for wildcard domain
